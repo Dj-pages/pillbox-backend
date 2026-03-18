@@ -17,9 +17,14 @@ async function listReminders(req, res) {
 async function getDueReminders(req, res) {
   try {
     const now = new Date();
-    const hhmm = now.toTimeString().slice(0, 5);
+    
+    // Convert to IST (UTC + 5:30)
+    const istOffset = 5.5 * 60 * 60 * 1000;
+    const istTime = new Date(now.getTime() + istOffset);
+    
+    const hhmm = istTime.toISOString().slice(11, 16); // "HH:MM"
     const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    const today = dayNames[now.getDay()];
+    const today = dayNames[istTime.getDay()];
 
     const result = await pool.query(`
       SELECT r.id, r.remind_time, r.medicine_id, m.name AS medicine_name, m.dosage, m.stock
@@ -31,7 +36,7 @@ async function getDueReminders(req, res) {
         AND m.stock > 0
     `, [hhmm, today]);
 
-    res.json({ timestamp: now.toISOString(), due: result.rows });
+    res.json({ timestamp: istTime.toISOString(), due: result.rows });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

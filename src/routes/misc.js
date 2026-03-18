@@ -6,14 +6,15 @@ router.get('/logs',                   getLogs);
 router.post('/logs/missed',           logMissed);
 router.post('/acknowledge/:reminderId', acknowledge);
 router.get('/time', (_req, res) => {
-  const now = new Date();
+  const utc = new Date();
+  const ist = new Date(utc.getTime() + 5.5 * 60 * 60 * 1000);
   res.json({
-    year:   now.getFullYear(),
-    month:  now.getMonth() + 1,
-    day:    now.getDate(),
-    hour:   now.getHours(),
-    minute: now.getMinutes(),
-    second: now.getSeconds()
+    year:   ist.getFullYear(),
+    month:  ist.getMonth() + 1,
+    day:    ist.getDate(),
+    hour:   ist.getHours(),
+    minute: ist.getMinutes(),
+    second: ist.getSeconds()
   });
 });
 module.exports = router;

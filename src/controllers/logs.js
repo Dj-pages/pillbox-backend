@@ -68,6 +68,8 @@ async function getLogs(req, res) {
 
 async function getDashboard(req, res) {
   try {
+    const istDate = new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000)
+      .toISOString().slice(0, 10);
     const [medicines, todayLogs, lowStock, upcoming] = await Promise.all([
       pool.query('SELECT COUNT(*) AS total FROM medicines'),
       pool.query(`SELECT status, COUNT(*) AS count FROM logs WHERE triggered_at::date = CURRENT_DATE GROUP BY status`),
