@@ -10,7 +10,23 @@ const miscRouter      = require('./routes/misc');
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+const corsOptions = {
+  origin: function(origin, callback) {
+    const allowed = [
+      'http://localhost:5173',
+      'http://localhost:3001',
+      ...(process.env.CORS_ORIGIN?.split(',') || [])
+    ];
+    if (!origin || allowed.includes(origin) || origin.match(/.*\.up\.railway\.app$/)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use((req, _res, next) => {
